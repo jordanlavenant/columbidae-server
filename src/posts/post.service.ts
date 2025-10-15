@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
-import { PrismaService } from './prisma.service'
+import { PrismaService } from '@/prisma.service'
 import { Post, Prisma } from 'generated/prisma'
+import { CreatePostDto } from './dto/create-post.dto'
 
 @Injectable()
 export class PostsService {
@@ -31,7 +32,7 @@ export class PostsService {
     })
   }
 
-  async createPost(data: Prisma.PostCreateInput): Promise<Post> {
+  async createPost(data: CreatePostDto): Promise<Post> {
     return this.prisma.post.create({
       data,
     })
