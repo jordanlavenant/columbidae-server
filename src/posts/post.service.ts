@@ -2,10 +2,16 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '@/prisma.service'
 import { Post, Prisma } from 'generated/prisma'
 import { CreatePostDto } from './dto/create-post.dto'
+import { EventEmitter2 } from '@nestjs/event-emitter'
+import { POST_EVENT } from '@/constants/events'
+import { PostEvent } from './events/post.update'
 
 @Injectable()
 export class PostsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   async post(
     postWhereUniqueInput: Prisma.PostWhereUniqueInput,
@@ -33,9 +39,14 @@ export class PostsService {
   }
 
   async createPost(data: CreatePostDto): Promise<Post> {
-    return this.prisma.post.create({
-      data,
-    })
+    return this.prisma.post
+      .create({
+        data,
+      })
+      .then((post) => {
+        this.emitPostUpdate(post)
+        return post
+      })
   }
 
   async updatePost(params: {
@@ -53,5 +64,11 @@ export class PostsService {
     return this.prisma.post.delete({
       where,
     })
+  }
+
+  // Emit post update event
+  emitPostUpdate(post: Post): void {
+    this.eventEmitter.emit(POST_EVENT, new PostEvent('PostUpdate', post))
+    console.log('Emitted post update event for post ID:', post.id)
   }
 }
