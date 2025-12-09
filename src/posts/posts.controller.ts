@@ -28,11 +28,6 @@ export class PostsController {
     return this.appService.posts({})
   }
 
-  @Get(':id')
-  async getPostById(@Param('id') id: string): Promise<PostModel | null> {
-    return this.appService.post({ id })
-  }
-
   @Get('filtered-posts/:searchString')
   async getFilteredPosts(
     @Param('searchString') searchString: string,
@@ -71,5 +66,10 @@ export class PostsController {
         }
       }),
     )
+  }
+
+  @Get(':id')
+  async getPostById(@Param('id') id: string): Promise<PostModel | null> {
+    return this.appService.post({ id })
   }
 }
