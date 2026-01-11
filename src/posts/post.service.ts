@@ -67,14 +67,14 @@ export class PostsService {
   }
 
   async createPost(data: CreatePostDto): Promise<Post> {
-    return this.prisma.post
-      .create({
-        data,
-      })
-      .then((post) => {
-        this.emitPostUpdate(post)
-        return post
-      })
+    const post = await this.prisma.post.create({
+      data,
+    })
+    // Fetch the complete post object with relations
+    const postObj = await this.post({ id: post.id })
+    this.emitPostUpdate(postObj!)
+
+    return postObj!
   }
 
   async updatePost(params: {

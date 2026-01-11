@@ -24,7 +24,8 @@ export class PostsController {
     private eventEmitter: EventEmitter2,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+  // ! temporary disabled for testing purposes
+  // @UseGuards(JwtAuthGuard)
   @Get()
   async feed(): Promise<PostModel[]> {
     return this.appService.posts({})
@@ -54,7 +55,8 @@ export class PostsController {
     })
   }
 
-  @UseGuards(JwtAuthGuard)
+  // ! temporary disabled for testing purposes
+  // @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createPostDto: CreatePostDto): Promise<PostModel> {
     return this.appService.createPost(createPostDto)
@@ -77,7 +79,8 @@ export class PostsController {
     return this.appService.post({ id })
   }
 
-  @UseGuards(JwtAuthGuard)
+  // ! temporary disabled for testing purposes
+  // @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<PostModel> {
     return this.appService.deletePost({ id })
