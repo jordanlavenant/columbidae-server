@@ -7,9 +7,16 @@ import { PrismaService } from './prisma.service'
 import { PostsModule } from './posts/posts.module'
 import { UsersModule } from './users/users.module'
 import { CommentsModule } from './comment/comments.module'
+import { AuthsModule } from './auth/auths.module'
 
 @Module({
-  imports: [ConfigModule.forRoot(), UsersModule, PostsModule, CommentsModule],
+  imports: [
+    ConfigModule.forRoot(),
+    UsersModule,
+    PostsModule,
+    CommentsModule,
+    AuthsModule,
+  ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })

@@ -40,6 +40,13 @@ cp .env.example .env
 
 ```
 DATABASE_URL=<your database connection url>
+JWT_SECRET=<your jwt secret>
+```
+
+Générer une clé secrète JWT :
+
+```bash
+openssl rand -base64 32
 ```
 
 5. Démarrer la base de données PostgreSQL avec Docker

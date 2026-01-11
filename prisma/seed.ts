@@ -2,23 +2,41 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 import { Comment, Post, User } from 'generated/prisma/browser'
 import { PrismaClient } from 'generated/prisma/client'
+import * as bcrypt from 'bcrypt'
 
-const users: User[] = [
-  {
-    id: '1',
-    email: 'john.doe@example.com',
-    name: 'John Doe',
-    createdAt: new Date(),
-    defaultRourouId: null,
-  },
-  {
-    id: '2',
-    email: 'jane.doe@example.com',
-    name: 'Jane Doe',
-    createdAt: new Date(),
-    defaultRourouId: null,
-  },
-]
+async function hashPassword(password: string) {
+  const salt = await bcrypt.genSalt(10)
+  const hashedPassword = await bcrypt.hash(password, salt)
+  return { hashedPassword, salt }
+}
+
+const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
+  const user1Password = await hashPassword('john')
+  const user2Password = await hashPassword('jane')
+
+  return [
+    {
+      id: '1',
+      email: 'john.doe@example.com',
+      name: 'John Doe',
+      password: user1Password.hashedPassword,
+      salt: user1Password.salt,
+      provider: 'local',
+      providerId: null,
+      defaultRourouId: null,
+    },
+    {
+      id: '2',
+      email: 'jane.doe@example.com',
+      name: 'Jane Doe',
+      password: user2Password.hashedPassword,
+      salt: user2Password.salt,
+      provider: 'local',
+      providerId: null,
+      defaultRourouId: null,
+    },
+  ]
+}
 
 const posts: Post[] = [
   {
@@ -41,15 +59,15 @@ const comments: Comment[] = [
   {
     id: '1',
     comment: 'Great post!',
-    postId: posts[0].id,
-    authorId: users[1].id,
+    postId: '1',
+    authorId: '2',
     createdAt: new Date(),
   },
   {
     id: '2',
     comment: 'Thanks for sharing!',
-    postId: posts[1].id,
-    authorId: users[0].id,
+    postId: '2',
+    authorId: '1',
     createdAt: new Date(),
   },
 ]
@@ -63,6 +81,8 @@ const prisma = new PrismaClient({
 
 async function main() {
   console.log('Seeding database...')
+
+  const users = await createUsers()
 
   for (const user of users) {
     await prisma.user.upsert({

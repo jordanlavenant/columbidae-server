@@ -24,9 +24,13 @@ model Asset {
 }
 
 model User {
-  id    String  @id @default(uuid())
-  email String  @unique
-  name  String
+  id       String  @id @default(uuid())
+  email    String  @unique
+  name     String
+  password String?
+  salt     String?
+  provider String? @default("local") // local, google, github, apple
+  providerId String? // ID from the OAuth provider
   createdAt DateTime @default(now())
   // Relations
   defaultRourouId String?
@@ -35,6 +39,8 @@ model User {
   Reacts   Rourou[]
   Followers Follow[] @relation("UserFollowers")
   Following Follow[] @relation("UserFollowing")
+  
+  @@unique([provider, providerId])
 }
 
 model Comment {
