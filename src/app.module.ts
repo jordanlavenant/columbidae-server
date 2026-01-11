@@ -6,9 +6,10 @@ import { AppService } from './app.service'
 import { PrismaService } from './prisma.service'
 import { PostsModule } from './posts/posts.module'
 import { UsersModule } from './users/users.module'
+import { CommentsModule } from './comment/comments.module'
 
 @Module({
-  imports: [ConfigModule.forRoot(), UsersModule, PostsModule],
+  imports: [ConfigModule.forRoot(), UsersModule, PostsModule, CommentsModule],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })

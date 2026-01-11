@@ -18,6 +18,20 @@ export class PostsService {
   ): Promise<Post | null> {
     return this.prisma.post.findUnique({
       where: postWhereUniqueInput,
+      include: {
+        Author: true,
+        Assets: true,
+        Comments: {
+          include: {
+            Author: true,
+          },
+        },
+        Reacts: {
+          include: {
+            Author: true,
+          },
+        },
+      },
     })
   }
 
@@ -35,6 +49,20 @@ export class PostsService {
       cursor,
       where,
       orderBy,
+      include: {
+        Author: true,
+        Assets: true,
+        Comments: {
+          include: {
+            Author: true,
+          },
+        },
+        Reacts: {
+          include: {
+            Author: true,
+          },
+        },
+      },
     })
   }
 

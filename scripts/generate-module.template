@@ -1,0 +1,190 @@
+#!/usr/bin/env node
+
+const fs = require('fs')
+const path = require('path')
+
+const modelName = process.argv[2]
+
+if (!modelName) {
+  console.error('Usage: npm run add:model <name>')
+  process.exit(1)
+}
+
+const capitalizedName = modelName.charAt(0).toUpperCase() + modelName.slice(1)
+const pluralName = modelName + 's'
+const capitalizedPluralName = capitalizedName + 's'
+
+const srcDir = path.join(__dirname, '..', 'src')
+const moduleDir = path.join(srcDir, modelName)
+const dtoDir = path.join(moduleDir, 'dto')
+
+// Create directories
+;[moduleDir, dtoDir].forEach((dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true })
+    console.log(`Created directory: ${dir}`)
+  }
+})
+
+// Generate service file
+const serviceContent = `import { Injectable } from '@nestjs/common'
+import { PrismaService } from '@/prisma.service'
+import { Create${capitalizedName}Dto } from './dto/create-${modelName}.dto'
+import { ${capitalizedName}, Prisma } from 'generated/prisma/browser'
+
+@Injectable()
+export class ${capitalizedPluralName}Service {
+  constructor(
+    private prisma: PrismaService,
+  ) {}
+
+  async ${modelName}(
+    ${modelName}WhereUniqueInput: Prisma.${capitalizedName}WhereUniqueInput,
+  ): Promise<${capitalizedName} | null> {
+    return this.prisma.${modelName}.findUnique({
+      where: ${modelName}WhereUniqueInput,
+    })
+  }
+
+  async ${pluralName}(params: {
+    skip?: number
+    take?: number
+    cursor?: Prisma.${capitalizedName}WhereUniqueInput
+    where?: Prisma.${capitalizedName}WhereInput
+    orderBy?: Prisma.${capitalizedName}OrderByWithRelationInput
+  }): Promise<${capitalizedName}[]> {
+    const { skip, take, cursor, where, orderBy } = params
+    return this.prisma.${modelName}.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    })
+  }
+
+  async create${capitalizedName}(data: Create${capitalizedName}Dto): Promise<${capitalizedName}> {
+    return this.prisma.${modelName}.create({
+      data,
+    })
+  }
+
+  async update${capitalizedName}(params: {
+    where: Prisma.${capitalizedName}WhereUniqueInput
+    data: Prisma.${capitalizedName}UpdateInput
+  }): Promise<${capitalizedName}> {
+    const { data, where } = params
+    return this.prisma.${modelName}.update({
+      data,
+      where,
+    })
+  }
+
+  async delete${capitalizedName}(where: Prisma.${capitalizedName}WhereUniqueInput): Promise<${capitalizedName}> {
+    return this.prisma.${modelName}.delete({
+      where,
+    })
+  }
+}
+`
+
+fs.writeFileSync(
+  path.join(moduleDir, `${modelName}.service.ts`),
+  serviceContent,
+)
+console.log(`Created: ${modelName}.service.ts`)
+
+// Generate controller file
+const controllerContent = `import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+} from '@nestjs/common'
+import { ${capitalizedPluralName}Service } from './${modelName}.service'
+import { ${capitalizedName} as ${capitalizedName}Model } from 'generated/prisma/browser'
+import { Create${capitalizedName}Dto } from './dto/create-${modelName}.dto'
+
+@Controller('api/${pluralName}')
+export class ${capitalizedPluralName}Controller {
+  constructor(
+    private readonly appService: ${capitalizedPluralName}Service,
+  ) {}
+
+  @Get()
+  async getAll(): Promise<${capitalizedName}Model[]> {
+    return this.appService.${pluralName}({})
+  }
+
+  @Post()
+  async create(@Body() create${capitalizedName}Dto: Create${capitalizedName}Dto): Promise<${capitalizedName}Model> {
+    return this.appService.create${capitalizedName}(create${capitalizedName}Dto)
+  }
+
+  @Get(':id')
+  async getById(@Param('id') id: string): Promise<${capitalizedName}Model | null> {
+    return this.appService.${modelName}({ id })
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<${capitalizedName}Model> {
+    return this.appService.delete${capitalizedName}({ id })
+  }
+}
+`
+
+fs.writeFileSync(
+  path.join(moduleDir, `${pluralName}.controller.ts`),
+  controllerContent,
+)
+console.log(`Created: ${pluralName}.controller.ts`)
+
+// Generate module file
+const moduleContent = `import { Module } from '@nestjs/common'
+import { ${capitalizedPluralName}Controller } from './${pluralName}.controller'
+import { ${capitalizedPluralName}Service } from './${modelName}.service'
+import { PrismaService } from '@/prisma.service'
+
+@Module({
+  controllers: [${capitalizedPluralName}Controller],
+  providers: [PrismaService, ${capitalizedPluralName}Service],
+  exports: [${capitalizedPluralName}Service],
+})
+export class ${capitalizedPluralName}Module {}
+`
+
+fs.writeFileSync(path.join(moduleDir, `${pluralName}.module.ts`), moduleContent)
+console.log(`Created: ${pluralName}.module.ts`)
+
+// Generate DTOs
+const createDtoContent = `import { IsNotEmpty, IsString } from 'class-validator'
+
+export class Create${capitalizedName}Dto {
+  // Add your properties here
+}
+`
+
+fs.writeFileSync(
+  path.join(dtoDir, `create-${modelName}.dto.ts`),
+  createDtoContent,
+)
+console.log(`Created: dto/create-${modelName}.dto.ts`)
+
+const updateDtoContent = `import { PartialType } from '@nestjs/mapped-types'
+import { Create${capitalizedName}Dto } from './create-${modelName}.dto'
+
+export class Update${capitalizedName}Dto extends PartialType(Create${capitalizedName}Dto) {}
+`
+
+fs.writeFileSync(
+  path.join(dtoDir, `update-${modelName}.dto.ts`),
+  updateDtoContent,
+)
+console.log(`Created: dto/update-${modelName}.dto.ts`)
+
+console.log(`\n✅ Module '${modelName}' created successfully!`)
+console.log(`\nNext steps:`)
+console.log(`1. Import ${capitalizedPluralName}Module in app.module.ts`)
+console.log(`2. Update your Prisma schema and run migrations`)

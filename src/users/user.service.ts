@@ -12,6 +12,11 @@ export class UsersService {
   ): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: userWhereUniqueInput,
+      include: {
+        Posts: true,
+        Followers: true,
+        Following: true,
+      },
     })
   }
 

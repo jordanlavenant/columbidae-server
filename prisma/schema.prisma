@@ -13,18 +13,77 @@ generator client {
   output   = "../generated/prisma"
 }
 
+// Define your database schema here
+
+model Asset {
+  id        String   @id @default(uuid())
+  url       String
+  createdAt DateTime @default(now())
+  // Relations
+  Posts    Post[]
+}
 
 model User {
   id    String  @id @default(uuid())
   email String  @unique
   name  String
-  posts Post[]
+  createdAt DateTime @default(now())
+  // Relations
+  defaultRourouId String?
+  Posts    Post[]
+  Comments Comment[]
+  Reacts   Rourou[]
+  Followers Follow[] @relation("UserFollowers")
+  Following Follow[] @relation("UserFollowing")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  comment   String
+  createdAt DateTime @default(now())
+  // Relations
+  authorId  String
+  postId    String
+  Author    User     @relation(fields: [authorId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+}
+
+model Rourou {
+  id        String   @id @default(uuid())
+  name      String
+  // put the path url of the rourous in client side in public/
+  // url       String
+  createdAt DateTime @default(now())
+  // Relations
+  authorId String
+  postId   String
+  Author   User     @relation(fields: [authorId], references: [id])
+  Post   Post     @relation(fields: [postId], references: [id])
+
 }
 
 model Post {
   id        String   @id @default(uuid())
   title     String
   content   String
-  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  // Relations
   authorId  String
+  Author    User     @relation(fields: [authorId], references: [id])
+  Comments  Comment[]
+  Reacts   Rourou[]
+  Assets    Asset[]
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  // Relations
+  followerId  String
+  followedId  String
+  follower    User     @relation("UserFollowing", fields: [followerId], references: [id])
+  followed    User     @relation("UserFollowers", fields: [followedId], references: [id])
+
+  // Constraint to ensure a user cannot follow the same user more than once and cannot follow themselves
+  @@unique([followerId, followedId])
 }

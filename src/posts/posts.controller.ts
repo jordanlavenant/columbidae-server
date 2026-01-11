@@ -40,6 +40,11 @@ export class PostsController {
           {
             content: { contains: searchString },
           },
+          {
+            Author: {
+              name: { contains: searchString },
+            },
+          },
         ],
       },
     })
