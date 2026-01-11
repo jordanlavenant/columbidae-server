@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '@/prisma.service'
-import { Post, Prisma } from 'generated/prisma'
 import { CreatePostDto } from './dto/create-post.dto'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { POST_EVENT } from '@/constants/events'
 import { PostEvent } from './events/post.update'
+import { Post, Prisma } from 'generated/prisma/browser'
 
 @Injectable()
 export class PostsService {

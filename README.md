@@ -48,7 +48,13 @@ DATABASE_URL=<your database connection url>
 docker compose up -d
 ```
 
-6. Effectuer les migrations
+6. Générer le client Prisma
+
+```bash
+npx prisma generate
+```
+
+7. Effectuer les migrations
 
 ```bash
 npx prisma migrate dev
@@ -60,23 +66,45 @@ npx prisma migrate dev
 npm start
 ```
 
+## Exécuter la seed
+
+```bash
+npm run seed
+```
+
+## Réinitialiser la base de données
+
+```bash
+npx prisma migrate reset
+```
+
+## Ouvrir le Studio Prisma
+
+```bash
+npx prisma studio
+```
+
 ## Routes
 
-## Posts
+### Posts
 
 - **GET `/api/posts`** : Obtenir tous les posts (feed)
 - **POST `/api/posts`** : Créer un nouveau post
   - `title: string`
   - `content: string`
   - `authorId: string`
+- **GET `/api/posts/filtered-posts/:searchString`** : Obtenir les posts filtrés par une chaîne de recherche
 - **GET `/api/posts/:id`** : Obtenir un post par son ID
 - **DELETE `/api/posts/:id`** : Supprimer un post par son ID
-- **GET `/api/posts/filtered-posts/:searchString`** : Obtenir les posts filtrés par une chaîne de recherche
 
-## Users
+### Users
 
-- **GET `/api/posts`** : Obtenir tous les users
+- **GET `/api/users`** : Obtenir tous les users
 - **POST `/api/users`** : Créer un nouvel user
   - `username: string`
   - `email: string`
 - **GET `/api/users/:id`** : Obtenir un user par son ID
+
+---
+
+Developed with ❤️ by @jordanlavenant & @marcroussel

@@ -1,4 +1,4 @@
-import { Post } from 'generated/prisma'
+import { Post } from 'generated/prisma/browser'
 
 export class PostEvent {
   constructor(

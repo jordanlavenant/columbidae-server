@@ -3,14 +3,13 @@ import {
   Controller,
   Delete,
   Get,
-  Header,
   Logger,
   Param,
   Post,
   Sse,
 } from '@nestjs/common'
 import { PostsService } from './post.service'
-import { Post as PostModel } from 'generated/prisma'
+import { Post as PostModel } from 'generated/prisma/browser'
 import { CreatePostDto } from './dto/create-post.dto'
 import { fromEvent, map, Observable } from 'rxjs'
 import { EventEmitter2 } from '@nestjs/event-emitter'
@@ -51,11 +50,6 @@ export class PostsController {
     return this.appService.createPost(createPostDto)
   }
 
-  @Delete(':id')
-  async delete(@Param('id') id: string): Promise<PostModel> {
-    return this.appService.deletePost({ id })
-  }
-
   @Sse('events')
   subscribeToEvents(): Observable<{ data: string }> {
     return fromEvent(this.eventEmitter, POST_EVENT).pipe(
@@ -71,5 +65,10 @@ export class PostsController {
   @Get(':id')
   async getPostById(@Param('id') id: string): Promise<PostModel | null> {
     return this.appService.post({ id })
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<PostModel> {
+    return this.appService.deletePost({ id })
   }
 }

@@ -1,6 +1,7 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
-import { Post, PrismaClient, User } from '../generated/prisma'
+import { Post, User } from 'generated/prisma/browser'
+import { PrismaClient } from 'generated/prisma/client'
 
 const users: User[] = [
   {
