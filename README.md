@@ -55,16 +55,16 @@ openssl rand -base64 32
 docker compose up -d
 ```
 
-6. Générer le client Prisma
-
-```bash
-npx prisma generate
-```
-
-7. Effectuer les migrations
+6. Effectuer les migrations
 
 ```bash
 npx prisma migrate dev
+```
+
+7. Générer le client Prisma
+
+```bash
+npx prisma generate
 ```
 
 ## Démarrer le serveur de développement
