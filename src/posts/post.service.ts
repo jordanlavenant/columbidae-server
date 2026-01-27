@@ -50,13 +50,18 @@ export class PostsService {
       where,
       orderBy,
       include: {
+        // Récupérer l'auteur
         Author: true,
+        // Récupérer les assets
         Assets: true,
+        // Récupérer les commentaires
         Comments: {
           include: {
+            // Récupérer l'auteur des commentaires
             Author: true,
           },
         },
+        // Récupérer les réactions
         Reacts: {
           include: {
             Author: true,
