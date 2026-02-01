@@ -199,7 +199,7 @@ export class MinioService {
       // Compresser la vidéo avec ffmpeg
       await new Promise<void>((resolve, reject) => {
         ffmpeg(tempInputPath)
-          .size('1280x?') // Limite à 1280px de largeur max (720p~1080p)
+          .size('1280x?') // Limite à 1280px de largeur, hauteur auto
           .outputOptions([
             '-c:v libx264',
             '-profile:v baseline',

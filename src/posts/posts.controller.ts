@@ -39,9 +39,6 @@ export class PostsController {
       where: {
         OR: [
           {
-            title: { contains: searchString },
-          },
-          {
             content: { contains: searchString },
           },
           {

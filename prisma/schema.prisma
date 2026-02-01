@@ -38,7 +38,7 @@ model User {
   createdAt DateTime @default(now())
   // Relations
   defaultRourouId String?
-  Posts    Post[]
+  Posts    Post[] 
   Comments Comment[]
   Reacts   Rourou[]
   Followers Follow[] @relation("UserFollowers")
@@ -54,8 +54,8 @@ model Comment {
   // Relations
   authorId  String
   postId    String
-  Author    User     @relation(fields: [authorId], references: [id])
-  post      Post     @relation(fields: [postId], references: [id])
+  Author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model Rourou {
@@ -67,22 +67,22 @@ model Rourou {
   // Relations
   authorId String
   postId   String
-  Author   User     @relation(fields: [authorId], references: [id])
-  Post   Post     @relation(fields: [postId], references: [id])
+  Author   User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  Post   Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
 }
 
 model Post {
   id        String   @id @default(uuid())
-  title     String
   content   String
   createdAt DateTime @default(now())
   // Relations
   authorId  String
-  Author    User     @relation(fields: [authorId], references: [id])
+  Author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   Comments  Comment[]
   Reacts   Rourou[]
   Assets    Asset[]
+  // ! faire relation de delete cascade si on supprime un post
 }
 
 model Follow {
@@ -91,8 +91,8 @@ model Follow {
   // Relations
   followerId  String
   followedId  String
-  follower    User     @relation("UserFollowing", fields: [followerId], references: [id])
-  followed    User     @relation("UserFollowers", fields: [followedId], references: [id])
+  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  followed    User     @relation("UserFollowers", fields: [followedId], references: [id], onDelete: Cascade)
 
   // Constraint to ensure a user cannot follow the same user more than once and cannot follow themselves
   @@unique([followerId, followedId])
