@@ -1,10 +1,6 @@
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsNotEmpty, IsOptional, IsString, IsArray } from 'class-validator'
 
 export class CreatePostDto {
-  @IsNotEmpty()
-  @IsString()
-  readonly title: string
-
   @IsNotEmpty()
   @IsString()
   readonly content: string
@@ -12,4 +8,9 @@ export class CreatePostDto {
   @IsNotEmpty()
   @IsString()
   readonly authorId: string
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  readonly assetIds?: string[]
 }

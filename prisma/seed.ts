@@ -41,14 +41,12 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
 const posts: Post[] = [
   {
     id: '1',
-    title: 'Hello World',
     content: 'This is my first post!',
     authorId: '1',
     createdAt: new Date(),
   },
   {
     id: '2',
-    title: 'Prisma is Awesome',
     content: 'Let me tell you why Prisma is so great...',
     authorId: '2',
     createdAt: new Date(),

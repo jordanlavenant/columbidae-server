@@ -50,13 +50,18 @@ export class PostsService {
       where,
       orderBy,
       include: {
+        // Récupérer l'auteur
         Author: true,
+        // Récupérer les assets
         Assets: true,
+        // Récupérer les commentaires
         Comments: {
           include: {
+            // Récupérer l'auteur des commentaires
             Author: true,
           },
         },
+        // Récupérer les réactions
         Reacts: {
           include: {
             Author: true,
@@ -67,8 +72,19 @@ export class PostsService {
   }
 
   async createPost(data: CreatePostDto): Promise<Post> {
+    const { assetIds, ...postData } = data
+
     const post = await this.prisma.post.create({
-      data,
+      data: {
+        ...postData,
+        ...(assetIds && assetIds.length > 0
+          ? {
+              Assets: {
+                connect: assetIds.map((id) => ({ id })),
+              },
+            }
+          : {}),
+      },
     })
     // Fetch the complete post object with relations
     const postObj = await this.post({ id: post.id })

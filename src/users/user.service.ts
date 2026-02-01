@@ -13,7 +13,13 @@ export class UsersService {
     return this.prisma.user.findUnique({
       where: userWhereUniqueInput,
       include: {
-        Posts: true,
+        // Récupérer les posts d'un utilisateur avec leurs assets
+        Posts: {
+          include: {
+            Assets: true,
+          },
+        },
+        // Récupérer les followers et les utilisateurs suivis d'un utilisateur
         Followers: true,
         Following: true,
       },

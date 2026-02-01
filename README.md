@@ -38,9 +38,26 @@ npm install
 cp .env.example .env
 ```
 
-```
-DATABASE_URL=<your database connection url>
-JWT_SECRET=<your jwt secret>
+```bash
+# Database Configuration
+DATABASE_URL=postgresql://columbidae:columbidae@localhost:5432/columbidae
+
+# JWT Secret (change this in production!)
+JWT_SECRET=your-super-secret-jwt-key-change-me-in-production
+
+# Server
+PORT=3000
+
+# MinIO Configuration
+MINIO_ENDPOINT=localhost
+MINIO_PORT=9000
+MINIO_USE_SSL=false
+MINIO_ROOT_USER=enter-your-minio-root-user
+MINIO_ROOT_PASSWORD=enter-your-minio-root-password
+MINIO_BUCKET=assets-columbidae
+
+# Client URL
+CLIENT_URL=http://localhost:5173
 ```
 
 Générer une clé secrète JWT :
@@ -52,7 +69,7 @@ openssl rand -base64 32
 5. Démarrer la base de données PostgreSQL avec Docker
 
 ```bash
-docker compose up -d
+docker compose up --build -d
 ```
 
 6. Effectuer les migrations
@@ -67,16 +84,16 @@ npx prisma migrate dev
 npx prisma generate
 ```
 
-## Démarrer le serveur de développement
-
-```bash
-npm start
-```
-
 ## Exécuter la seed
 
 ```bash
 npm run seed
+```
+
+## Démarrer le serveur de développement
+
+```bash
+npm start
 ```
 
 ## Réinitialiser la base de données

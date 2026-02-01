@@ -21,7 +21,7 @@ export class CommentsController {
     return this.appService.comments({})
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post()
   async create(
     @Body() createCommentDto: CreateCommentDto,
@@ -29,13 +29,13 @@ export class CommentsController {
     return this.appService.createComment(createCommentDto)
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getById(@Param('id') id: string): Promise<CommentModel | null> {
     return this.appService.comment({ id })
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<CommentModel> {
     return this.appService.deleteComment({ id })

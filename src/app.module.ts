@@ -8,14 +8,20 @@ import { PostsModule } from './posts/posts.module'
 import { UsersModule } from './users/users.module'
 import { CommentsModule } from './comment/comments.module'
 import { AuthsModule } from './auth/auths.module'
+import { FollowsModule } from './follow/follows.module'
+import { RourousModule } from './rourou/rourous.module'
+import { AssetsModule } from './asset/assets.module'
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    AuthsModule,
     UsersModule,
     PostsModule,
     CommentsModule,
-    AuthsModule,
+    FollowsModule,
+    RourousModule,
+    AssetsModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
