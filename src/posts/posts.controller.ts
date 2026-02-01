@@ -24,7 +24,7 @@ export class PostsController {
     private eventEmitter: EventEmitter2,
   ) {}
 
-  @UseGuards(LocalAuthGuard)
+  // @UseGuards(LocalAuthGuard)
   @Get()
   async feed(): Promise<PostModel[]> {
     return this.appService.posts({})
@@ -54,7 +54,7 @@ export class PostsController {
     })
   }
 
-  @UseGuards(LocalAuthGuard)
+  // @UseGuards(LocalAuthGuard)
   @Post()
   async create(@Body() createPostDto: CreatePostDto): Promise<PostModel> {
     return this.appService.createPost(createPostDto)
@@ -77,7 +77,7 @@ export class PostsController {
     return this.appService.post({ id })
   }
 
-  @UseGuards(LocalAuthGuard)
+  // @UseGuards(LocalAuthGuard)
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<PostModel> {
     return this.appService.deletePost({ id })

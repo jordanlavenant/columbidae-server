@@ -18,6 +18,9 @@ generator client {
 model Asset {
   id        String   @id @default(uuid())
   url       String
+  key       String
+  mimeType  String
+  fileName  String
   createdAt DateTime @default(now())
   // Relations
   Posts    Post[]

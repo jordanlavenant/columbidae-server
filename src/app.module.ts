@@ -10,6 +10,7 @@ import { CommentsModule } from './comment/comments.module'
 import { AuthsModule } from './auth/auths.module'
 import { FollowsModule } from './follow/follows.module'
 import { RourousModule } from './rourou/rourous.module'
+import { AssetsModule } from './asset/assets.module'
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RourousModule } from './rourou/rourous.module'
     CommentsModule,
     FollowsModule,
     RourousModule,
+    AssetsModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
