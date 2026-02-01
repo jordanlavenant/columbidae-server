@@ -20,6 +20,7 @@ model Asset {
   url       String
   key       String
   mimeType  String
+  size      Int
   fileName  String
   createdAt DateTime @default(now())
   // Relations

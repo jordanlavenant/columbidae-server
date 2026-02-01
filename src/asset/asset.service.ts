@@ -81,13 +81,16 @@ export class AssetsService {
     }
 
     // Uploader vers MinIO
-    const { key, url } = await this.minioService.uploadFile(file, folder)
+    const { key, url, mimeType, size } = await this.minioService.uploadFile(
+      file,
+      folder,
+    )
 
     const data: CreateAssetDto = {
       url,
       key,
-      mimeType: file.mimetype,
-      size: file.size,
+      mimeType,
+      size,
       fileName: file.originalname,
     }
 
