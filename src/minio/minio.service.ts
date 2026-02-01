@@ -3,6 +3,14 @@ import { ConfigService } from '@nestjs/config'
 import * as Minio from 'minio'
 import { Readable } from 'stream'
 import sharp from 'sharp'
+import ffmpeg from 'fluent-ffmpeg'
+import ffmpegPath from '@ffmpeg-installer/ffmpeg'
+import { promisify } from 'util'
+import { writeFile, unlink } from 'fs/promises'
+import { join } from 'path'
+import { tmpdir } from 'os'
+
+ffmpeg.setFfmpegPath(ffmpegPath.path)
 
 export interface IUploadFile {
   buffer: Buffer
@@ -68,31 +76,52 @@ export class MinioService {
     }
   }
 
+  // Normalize asset name by replacing unsafe characters
+  async normalizeAssetName(name: string): Promise<string> {
+    return name.replace(/[^a-zA-Z0-9-_./]/g, '_')
+  }
+
+  // Upload file with compression for images and videos
   async uploadFile(
     file: IUploadFile,
     folder: string,
   ): Promise<{ key: string; url: string; mimeType: string; size: number }> {
     const timestamp = Date.now()
-    // Changer l'extension en .jpg pour toutes les images
-    const originalName = file.originalname.replace(/\.[^.]+$/, '.jpg')
-    const key = `${folder}/${timestamp}-${originalName}`
-
     let processedBuffer = file.buffer
     let processedSize = file.size
     let processedMimetype = file.mimetype
+    let fileExtension = file.originalname.split('.').pop() || 'file'
 
-    // Compresser si c'est une image
+    // === COMPRESSION IMAGE ===
     if (file.mimetype.startsWith('image/')) {
       const result = await this.compressImage(file.buffer)
       processedBuffer = result.buffer
       processedSize = result.size
       processedMimetype = 'image/jpeg'
+      fileExtension = 'jpg'
     }
+
+    // === COMPRESSION VIDEO ===
+    if (file.mimetype.startsWith('video/')) {
+      const result = await this.compressVideo(file.buffer, file.originalname)
+      processedBuffer = result.buffer
+      processedSize = result.size
+      processedMimetype = 'video/mp4'
+      fileExtension = 'mp4'
+    }
+
+    const originalName = file.originalname.replace(
+      /\.[^.]+$/,
+      `.${fileExtension}`,
+    )
+    const normalizedKey = `${folder}/${timestamp}-${await this.normalizeAssetName(
+      originalName,
+    )}`
 
     const stream = Readable.from(processedBuffer)
     await this.minioClient.putObject(
       this.bucketName,
-      key,
+      normalizedKey,
       stream,
       processedSize,
       {
@@ -100,10 +129,16 @@ export class MinioService {
       },
     )
 
-    const url = `${this.getMinioUrl()}/${this.bucketName}/${key}`
-    return { key, url, mimeType: processedMimetype, size: processedSize }
+    const url = `${this.getMinioUrl()}/${this.bucketName}/${normalizedKey}`
+    return {
+      key: normalizedKey,
+      url,
+      mimeType: processedMimetype,
+      size: processedSize,
+    }
   }
 
+  // ==================== COMPRESSION IMAGE ====================
   private async compressImage(
     buffer: Buffer,
   ): Promise<{ buffer: Buffer; size: number }> {
@@ -146,6 +181,57 @@ export class MinioService {
     return {
       buffer: compressedBuffer,
       size: compressedBuffer.length,
+    }
+  }
+
+  // ==================== COMPRESSION VIDEO ====================
+  private async compressVideo(
+    buffer: Buffer,
+    originalName: string,
+  ): Promise<{ buffer: Buffer; size: number }> {
+    const tempInputPath = join(tmpdir(), `input-${Date.now()}-${originalName}`)
+    const tempOutputPath = join(tmpdir(), `output-${Date.now()}.mp4`)
+
+    try {
+      // Écrire le buffer dans un fichier temporaire
+      await writeFile(tempInputPath, buffer)
+
+      // Compresser la vidéo avec ffmpeg
+      await new Promise<void>((resolve, reject) => {
+        ffmpeg(tempInputPath)
+          .size('1280x?') // Limite à 1280px de largeur max (720p~1080p)
+          .outputOptions([
+            '-c:v libx264',
+            '-profile:v baseline',
+            '-level 3.0',
+            '-pix_fmt yuv420p',
+            '-crf 32',
+            '-preset slower',
+            '-c:a aac',
+            '-b:a 96k',
+            '-movflags +faststart',
+          ])
+          .on('end', () => resolve())
+          .on('error', (err) => reject(err))
+          .save(tempOutputPath)
+      })
+
+      // Lire le fichier compressé
+      const compressedBuffer =
+        await require('fs/promises').readFile(tempOutputPath)
+
+      return {
+        buffer: compressedBuffer,
+        size: compressedBuffer.length,
+      }
+    } finally {
+      // Nettoyer les fichiers temporaires
+      try {
+        await unlink(tempInputPath)
+      } catch {}
+      try {
+        await unlink(tempOutputPath)
+      } catch {}
     }
   }
 

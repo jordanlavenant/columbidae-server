@@ -11,6 +11,11 @@ export class AssetsService {
     private minioService: MinioService,
   ) {}
 
+  // Normalize asset name by replacing unsafe characters
+  async normalizeAssetName(name: string): Promise<string> {
+    return name.replace(/[^a-zA-Z0-9-_./]/g, '_')
+  }
+
   async asset(
     assetWhereUniqueInput: Prisma.AssetWhereUniqueInput,
   ): Promise<Asset | null> {
@@ -42,21 +47,16 @@ export class AssetsService {
     })
   }
 
-  async updateAsset(params: {
-    where: Prisma.AssetWhereUniqueInput
-    data: Prisma.AssetUpdateInput
-  }): Promise<Asset> {
-    const { data, where } = params
-    return this.prisma.asset.update({
-      data,
-      where,
-    })
-  }
-
   async deleteAsset(where: Prisma.AssetWhereUniqueInput): Promise<Asset> {
-    return this.prisma.asset.delete({
-      where,
-    })
+    return this.prisma.asset
+      .delete({
+        where,
+      })
+      .then(async (asset) => {
+        // Supprimer le fichier de MinIO
+        await this.minioService.deleteFile(asset.key)
+        return asset
+      })
   }
 
   async uploadFile(
@@ -91,7 +91,7 @@ export class AssetsService {
       key,
       mimeType,
       size,
-      fileName: file.originalname,
+      fileName: await this.normalizeAssetName(file.originalname),
     }
 
     // Sauvegarder dans la BD
