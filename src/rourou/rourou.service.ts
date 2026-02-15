@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '@/prisma.service'
 import { Rourou, Prisma } from 'generated/prisma/browser'
+import { CreateRourouDto } from './dto/create-rourou.dto'
 
 @Injectable()
 export class RourousService {
@@ -21,5 +22,23 @@ export class RourousService {
       where,
       orderBy,
     })
+  }
+
+  async createRourou(data: CreateRourouDto): Promise<Rourou> {
+    const { authorId, postId, rourouName } = data
+
+    const rourou = await this.prisma.rourou.create({
+      data: {
+        Author: {
+          connect: { id: authorId },
+        },
+        Post: {
+          connect: { id: postId },
+        },
+        name: rourouName,
+      },
+    })
+
+    return rourou
   }
 }
