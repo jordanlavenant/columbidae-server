@@ -41,4 +41,10 @@ export class RourousService {
 
     return rourou
   }
+
+  async deleteRourou(where: Prisma.RourouWhereUniqueInput): Promise<Rourou> {
+    return this.prisma.rourou.delete({
+      where,
+    })
+  }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common'
 import { RourousService } from './rourou.service'
 import { Rourou as RourouModel } from 'generated/prisma/browser'
 import { CreateRourouDto } from './dto/create-rourou.dto'
@@ -20,5 +20,11 @@ export class RourousController {
   @Post()
   async create(@Body() createRourouDto: CreateRourouDto): Promise<RourouModel> {
     return this.appService.createRourou(createRourouDto)
+  }
+
+  // @UseGuards(LocalAuthGuard)
+  @Delete(':rourouId')
+  async delete(@Param('rourouId') id: string): Promise<RourouModel> {
+    return this.appService.deleteRourou({ id })
   }
 }
