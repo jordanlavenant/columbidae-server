@@ -17,7 +17,7 @@ export class AuthsService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, name, password } = registerDto
+    const { email, username, name, password } = registerDto
 
     // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
@@ -36,6 +36,7 @@ export class AuthsService {
     const user = await this.prisma.user.create({
       data: {
         email,
+        username,
         name,
         password: hashedPassword,
         salt,
@@ -44,7 +45,11 @@ export class AuthsService {
     })
 
     // Generate JWT token
-    const payload = { email: user.email, sub: user.id, name: user.name }
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      username: user.username,
+    }
     const access_token = this.jwtService.sign(payload)
 
     return {
@@ -52,7 +57,7 @@ export class AuthsService {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        username: user.username,
       },
     }
   }
@@ -76,14 +81,19 @@ export class AuthsService {
     return result
   }
 
-  async login(user: { id: string; email: string; name: string }) {
-    const payload = { email: user.email, sub: user.id, name: user.name }
+  async login(user: {
+    id: string
+    email: string
+    username: string
+    name: string
+  }) {
+    const payload = { email: user.email, sub: user.id, username: user.username }
     return {
       access_token: this.jwtService.sign(payload),
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        username: user.username,
       },
     }
   }

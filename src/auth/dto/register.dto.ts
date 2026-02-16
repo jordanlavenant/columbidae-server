@@ -7,6 +7,10 @@ export class RegisterDto {
 
   @IsNotEmpty()
   @IsString()
+  readonly username: string
+
+  @IsNotEmpty()
+  @IsString()
   readonly name: string
 
   @IsNotEmpty()

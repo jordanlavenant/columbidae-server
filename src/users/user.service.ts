@@ -10,20 +10,59 @@ export class UsersService {
   async user(
     userWhereUniqueInput: Prisma.UserWhereUniqueInput,
   ): Promise<User | null> {
-    return this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: userWhereUniqueInput,
       include: {
+        // Récupérer l'avatar d'un utilisateur
+        Avatar: true,
         // Récupérer les posts d'un utilisateur avec leurs assets
         Posts: {
           include: {
+            Author: true,
             Assets: true,
+            Comments: {
+              include: {
+                Author: true,
+              },
+            },
+            Reacts: {
+              include: {
+                Author: true,
+              },
+            },
           },
         },
         // Récupérer les followers et les utilisateurs suivis d'un utilisateur
-        Followers: true,
-        Following: true,
+        Followers: {
+          include: {
+            follower: {
+              select: {
+                id: true,
+                username: true,
+                name: true,
+              },
+            },
+          },
+        },
+        Following: {
+          include: {
+            followed: {
+              select: {
+                id: true,
+                username: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     })
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    return user
   }
 
   async users(params: {

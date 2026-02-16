@@ -22,6 +22,7 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
     {
       id: '1',
       email: 'john.doe@example.com',
+      username: 'johndoe',
       name: 'John Doe',
       password: john.hashedPassword,
       salt: john.salt,
@@ -32,6 +33,7 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
     {
       id: '2',
       email: 'jane.doe@example.com',
+      username: 'janedoe',
       name: 'Jane Doe',
       password: jane.hashedPassword,
       salt: jane.salt,
@@ -42,6 +44,7 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
     {
       id: '3',
       email: 'marc.roussel@example.com',
+      username: 'marcroussel',
       name: 'Marc Roussel',
       password: marc.hashedPassword,
       salt: marc.salt,
@@ -52,6 +55,7 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
     {
       id: '4',
       email: 'alice@example.com',
+      username: 'alicemartin',
       name: 'Alice Martin',
       password: alice.hashedPassword,
       salt: alice.salt,
@@ -62,6 +66,7 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
     {
       id: '5',
       email: 'bob@example.com',
+      username: 'bobdupont',
       name: 'Bob Dupont',
       password: bob.hashedPassword,
       salt: bob.salt,
@@ -72,6 +77,7 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
     {
       id: '6',
       email: 'clara@example.com',
+      username: 'claralopez',
       name: 'Clara Lopez',
       password: clara.hashedPassword,
       salt: clara.salt,

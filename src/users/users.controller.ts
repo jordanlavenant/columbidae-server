@@ -12,9 +12,11 @@ export class UsersController {
     return this.appService.users({})
   }
 
-  @Get(':id')
-  async getUserById(@Param('id') id: string): Promise<UserModel | null> {
-    return this.appService.user({ id })
+  @Get(':username')
+  async getUserByUsername(
+    @Param('username') username: string,
+  ): Promise<UserModel | null> {
+    return this.appService.user({ username })
   }
 
   @Post()
