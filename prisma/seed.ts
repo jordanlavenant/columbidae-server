@@ -29,6 +29,7 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
       provider: 'local',
       providerId: null,
       defaultRourouId: null,
+      avatarId: null,
     },
     {
       id: '2',
@@ -40,6 +41,7 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
       provider: 'local',
       providerId: null,
       defaultRourouId: null,
+      avatarId: null,
     },
     {
       id: '3',
@@ -51,6 +53,7 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
       provider: 'local',
       providerId: null,
       defaultRourouId: null,
+      avatarId: null,
     },
     {
       id: '4',
@@ -62,6 +65,7 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
       provider: 'local',
       providerId: null,
       defaultRourouId: null,
+      avatarId: null,
     },
     {
       id: '5',
@@ -73,6 +77,7 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
       provider: 'local',
       providerId: null,
       defaultRourouId: null,
+      avatarId: null,
     },
     {
       id: '6',
@@ -84,6 +89,7 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
       provider: 'local',
       providerId: null,
       defaultRourouId: null,
+      avatarId: null,
     },
   ]
 }

@@ -51,7 +51,11 @@ export class PostsService {
       orderBy,
       include: {
         // Récupérer l'auteur
-        Author: true,
+        Author: {
+          include: {
+            Avatar: true,
+          },
+        },
         // Récupérer les assets
         Assets: true,
         // Récupérer les commentaires
