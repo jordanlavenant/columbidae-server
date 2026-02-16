@@ -21,15 +21,15 @@ export class RourousController {
     return this.appService.rourous({})
   }
 
-  @Get(':postId')
-  async getByPostId(@Param('postId') postId: string): Promise<RourouModel[]> {
-    return this.appService.rourous({ where: { postId: postId } })
-  }
-
   // @UseGuard(LocalAuthGuard)
   @Post()
   async create(@Body() createRourouDto: CreateRourouDto): Promise<RourouModel> {
     return this.appService.createRourou(createRourouDto)
+  }
+
+  @Get(':postId')
+  async getByPostId(@Param('postId') postId: string): Promise<RourouModel[]> {
+    return this.appService.rourous({ where: { postId: postId } })
   }
 
   // @UseGuard(LocalAuthGuard)
