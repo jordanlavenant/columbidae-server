@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '@/prisma.service'
 import { Rourou, Prisma } from 'generated/prisma/browser'
 import { CreateRourouDto } from './dto/create-rourou.dto'
+import { Create } from 'sharp'
+import { UpdateRourouDto } from './dto/update-rourou.dto'
 
 @Injectable()
 export class RourousService {
@@ -40,6 +42,19 @@ export class RourousService {
     })
 
     return rourou
+  }
+
+  async updateRourou(params: {
+    where: Prisma.RourouWhereUniqueInput
+    data: UpdateRourouDto
+  }): Promise<Rourou> {
+    const { where, data } = params
+    return this.prisma.rourou.update({
+      data: {
+        name: data.rourouName,
+      },
+      where,
+    })
   }
 
   async deleteRourou(where: Prisma.RourouWhereUniqueInput): Promise<Rourou> {
