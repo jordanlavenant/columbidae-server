@@ -40,6 +40,7 @@ export class UsersService {
                 id: true,
                 username: true,
                 name: true,
+                Avatar: true,
               },
             },
           },
@@ -51,6 +52,7 @@ export class UsersService {
                 id: true,
                 username: true,
                 name: true,
+                Avatar: true,
               },
             },
           },
@@ -83,9 +85,15 @@ export class UsersService {
   }
 
   async createUser(data: CreateUserDto): Promise<User> {
-    return this.prisma.user.create({
-      data,
+    const { assetId, ...userData } = data
+
+    const user = await this.prisma.user.create({
+      data: {
+        ...userData,
+        Avatar: assetId ? { connect: { id: assetId } } : undefined,
+      },
     })
+    return user
   }
 
   async updateUser(params: {
