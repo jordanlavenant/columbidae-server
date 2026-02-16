@@ -70,6 +70,8 @@ model Rourou {
   Author   User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   Post   Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
+  // Constraint to ensure a user can react on a post with only one rourou
+  @@unique([authorId, postId])
 }
 
 model Post {

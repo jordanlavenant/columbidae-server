@@ -1,6 +1,6 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
-import { Comment, Post, User } from 'generated/prisma/browser'
+import { Comment, Post, User, Rourou } from 'generated/prisma/browser'
 import { PrismaClient } from 'generated/prisma/client'
 import * as bcrypt from 'bcrypt'
 
@@ -11,16 +11,20 @@ async function hashPassword(password: string) {
 }
 
 const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
-  const user1Password = await hashPassword('john')
-  const user2Password = await hashPassword('jane')
+  const john = await hashPassword('john')
+  const jane = await hashPassword('jane')
+  const marc = await hashPassword('marc')
+  const alice = await hashPassword('alice')
+  const bob = await hashPassword('bob')
+  const clara = await hashPassword('clara')
 
   return [
     {
       id: '1',
       email: 'john.doe@example.com',
       name: 'John Doe',
-      password: user1Password.hashedPassword,
-      salt: user1Password.salt,
+      password: john.hashedPassword,
+      salt: john.salt,
       provider: 'local',
       providerId: null,
       defaultRourouId: null,
@@ -29,8 +33,48 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
       id: '2',
       email: 'jane.doe@example.com',
       name: 'Jane Doe',
-      password: user2Password.hashedPassword,
-      salt: user2Password.salt,
+      password: jane.hashedPassword,
+      salt: jane.salt,
+      provider: 'local',
+      providerId: null,
+      defaultRourouId: null,
+    },
+    {
+      id: '3',
+      email: 'marc.roussel@example.com',
+      name: 'Marc Roussel',
+      password: marc.hashedPassword,
+      salt: marc.salt,
+      provider: 'local',
+      providerId: null,
+      defaultRourouId: null,
+    },
+    {
+      id: '4',
+      email: 'alice@example.com',
+      name: 'Alice Martin',
+      password: alice.hashedPassword,
+      salt: alice.salt,
+      provider: 'local',
+      providerId: null,
+      defaultRourouId: null,
+    },
+    {
+      id: '5',
+      email: 'bob@example.com',
+      name: 'Bob Dupont',
+      password: bob.hashedPassword,
+      salt: bob.salt,
+      provider: 'local',
+      providerId: null,
+      defaultRourouId: null,
+    },
+    {
+      id: '6',
+      email: 'clara@example.com',
+      name: 'Clara Lopez',
+      password: clara.hashedPassword,
+      salt: clara.salt,
       provider: 'local',
       providerId: null,
       defaultRourouId: null,
@@ -41,14 +85,50 @@ const createUsers = async (): Promise<Omit<User, 'createdAt'>[]> => {
 const posts: Post[] = [
   {
     id: '1',
-    content: 'This is my first post!',
+    content: 'This is my first post on Columbidae!',
     authorId: '1',
     createdAt: new Date(),
   },
   {
     id: '2',
-    content: 'Let me tell you why Prisma is so great...',
+    content: 'Prisma + PostgreSQL is such a powerful combo 🚀',
     authorId: '2',
+    createdAt: new Date(),
+  },
+  {
+    id: '3',
+    content: 'Working on a new feature today… stay tuned 👀',
+    authorId: '3',
+    createdAt: new Date(),
+  },
+  {
+    id: '4',
+    content: 'Just discovered how cool React hooks are!',
+    authorId: '4',
+    createdAt: new Date(),
+  },
+  {
+    id: '5',
+    content: 'Backend days are the best days.',
+    authorId: '3',
+    createdAt: new Date(),
+  },
+  {
+    id: '6',
+    content: 'Coffee ☕ + code = happiness.',
+    authorId: '5',
+    createdAt: new Date(),
+  },
+  {
+    id: '7',
+    content: 'TypeScript makes everything safer.',
+    authorId: '6',
+    createdAt: new Date(),
+  },
+  {
+    id: '8',
+    content: 'Deploying to production… fingers crossed 🤞',
+    authorId: '1',
     createdAt: new Date(),
   },
 ]
@@ -63,9 +143,82 @@ const comments: Comment[] = [
   },
   {
     id: '2',
-    comment: 'Thanks for sharing!',
+    comment: 'Totally agree!',
     postId: '2',
+    authorId: '3',
+    createdAt: new Date(),
+  },
+  {
+    id: '3',
+    comment: 'Can’t wait to see it 👀',
+    postId: '3',
+    authorId: '4',
+    createdAt: new Date(),
+  },
+  {
+    id: '4',
+    comment: 'Hooks changed my life too 😂',
+    postId: '4',
     authorId: '1',
+    createdAt: new Date(),
+  },
+  {
+    id: '5',
+    comment: 'Backend supremacy.',
+    postId: '5',
+    authorId: '5',
+    createdAt: new Date(),
+  },
+]
+
+const rourous: Rourou[] = [
+  {
+    id: '1',
+    name: 'laughing_rourou',
+    authorId: '2',
+    postId: '1',
+    createdAt: new Date(),
+  },
+  {
+    id: '2',
+    name: 'admiring_rourou',
+    authorId: '3',
+    postId: '2',
+    createdAt: new Date(),
+  },
+  {
+    id: '3',
+    name: 'casual_rourou',
+    authorId: '4',
+    postId: '3',
+    createdAt: new Date(),
+  },
+  {
+    id: '4',
+    name: 'surprised_rourou',
+    authorId: '5',
+    postId: '3',
+    createdAt: new Date(),
+  },
+  {
+    id: '5',
+    name: 'angry_rourou',
+    authorId: '6',
+    postId: '6',
+    createdAt: new Date(),
+  },
+  {
+    id: '6',
+    name: 'sad_rourou',
+    authorId: '1',
+    postId: '7',
+    createdAt: new Date(),
+  },
+  {
+    id: '7',
+    name: 'laughing_rourou',
+    authorId: '3',
+    postId: '8',
     createdAt: new Date(),
   },
 ]
@@ -103,6 +256,14 @@ async function main() {
       where: { id: comment.id },
       update: {},
       create: comment,
+    })
+  }
+
+  for (const rourou of rourous) {
+    await prisma.rourou.upsert({
+      where: { id: rourou.id },
+      update: {},
+      create: rourou,
     })
   }
 
