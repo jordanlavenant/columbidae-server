@@ -19,7 +19,11 @@ export class PostsService {
     return this.prisma.post.findUnique({
       where: postWhereUniqueInput,
       include: {
-        Author: true,
+        Author: {
+          include: {
+            Avatar: true,
+          },
+        },
         Assets: true,
         Comments: {
           include: {
@@ -62,7 +66,11 @@ export class PostsService {
         Comments: {
           include: {
             // Récupérer l'auteur des commentaires
-            Author: true,
+            Author: {
+              include: {
+                Avatar: true,
+              },
+            },
           },
         },
         // Récupérer les réactions
@@ -91,7 +99,20 @@ export class PostsService {
       },
     })
     // Fetch the complete post object with relations
-    const postObj = await this.post({ id: post.id })
+    const postObj = await this.prisma.post.findUnique({
+      where: { id: post.id },
+      // We take the Author relation to have the username reponse json update in real time
+      include: {
+        Author: {
+          include: {
+            Avatar: true,
+          },
+        },
+        Comments: true,
+        Reacts: true,
+        Assets: true,
+      },
+    })
     this.emitPostUpdate(postObj!)
 
     return postObj!
