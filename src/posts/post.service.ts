@@ -27,7 +27,11 @@ export class PostsService {
         Assets: true,
         Comments: {
           include: {
-            Author: true,
+            Author: {
+              include: {
+                Avatar: true,
+              },
+            },
           },
         },
         Reacts: {
