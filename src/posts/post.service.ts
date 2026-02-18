@@ -142,6 +142,5 @@ export class PostsService {
   // Emit post update event
   emitPostUpdate(post: Post): void {
     this.eventEmitter.emit(POST_EVENT, new PostEvent('PostUpdate', post))
-    console.log('Emitted post update event for post ID:', post.id)
   }
 }
