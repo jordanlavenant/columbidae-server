@@ -1,10 +1,12 @@
 services:
   db:
     image: postgres:16-bookworm
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: columbidae
-      POSTGRES_PASSWORD: columbidae
-      POSTGRES_DB: columbidae
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - '5432:5432'
     volumes:
@@ -14,12 +16,14 @@ services:
 
   minio:
     image: minio/minio
+    env_file:
+      - .env
     ports:
       - '9000:9000'
       - '9001:9001'
     environment:
-      MINIO_ROOT_USER: root
-      MINIO_ROOT_PASSWORD: password
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     command: server --console-address ":9001" /data
     volumes:
       - minio-data:/data
