@@ -24,12 +24,14 @@ model Asset {
   fileName  String
   createdAt DateTime @default(now())
   // Relations
-  Posts    Post[]
+  Posts      Post[]
+  UserAvatar User? @relation("UserAvatar")
 }
 
 model User {
-  id       String  @id @default(uuid())
-  email    String  @unique
+  id       String @id @default(uuid())
+  email    String @unique
+  username String @unique
   name     String
   password String?
   salt     String?
@@ -37,6 +39,8 @@ model User {
   providerId String? // ID from the OAuth provider
   createdAt DateTime @default(now())
   // Relations
+  avatarId String? @unique
+  Avatar   Asset? @relation("UserAvatar", fields: [avatarId], references: [id])
   defaultRourouId String?
   Posts    Post[] 
   Comments Comment[]

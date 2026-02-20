@@ -1,20 +1,17 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  UseGuards,
-} from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Sse } from '@nestjs/common'
 import { CommentsService } from './comment.service'
 import { Comment as CommentModel } from 'generated/prisma/browser'
 import { CreateCommentDto } from './dto/create-comment.dto'
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard'
+import { fromEvent, map, Observable } from 'rxjs'
+import { EventEmitter2 } from 'eventemitter2'
+import { COMMENT_EVENT } from '@/constants/events'
 
 @Controller('api/comments')
 export class CommentsController {
-  constructor(private readonly appService: CommentsService) {}
+  constructor(
+    private readonly appService: CommentsService,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   @Get()
   async getAll(): Promise<CommentModel[]> {
@@ -27,6 +24,17 @@ export class CommentsController {
     @Body() createCommentDto: CreateCommentDto,
   ): Promise<CommentModel> {
     return this.appService.createComment(createCommentDto)
+  }
+
+  @Sse('events')
+  subscribeToEvents(): Observable<{ data: string }> {
+    return fromEvent(this.eventEmitter, COMMENT_EVENT).pipe(
+      map((payload) => {
+        return {
+          data: JSON.stringify(payload),
+        }
+      }),
+    )
   }
 
   // @UseGuards(JwtAuthGuard)

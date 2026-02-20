@@ -19,11 +19,19 @@ export class PostsService {
     return this.prisma.post.findUnique({
       where: postWhereUniqueInput,
       include: {
-        Author: true,
+        Author: {
+          include: {
+            Avatar: true,
+          },
+        },
         Assets: true,
         Comments: {
           include: {
-            Author: true,
+            Author: {
+              include: {
+                Avatar: true,
+              },
+            },
           },
         },
         Reacts: {
@@ -51,14 +59,22 @@ export class PostsService {
       orderBy,
       include: {
         // Récupérer l'auteur
-        Author: true,
+        Author: {
+          include: {
+            Avatar: true,
+          },
+        },
         // Récupérer les assets
         Assets: true,
         // Récupérer les commentaires
         Comments: {
           include: {
             // Récupérer l'auteur des commentaires
-            Author: true,
+            Author: {
+              include: {
+                Avatar: true,
+              },
+            },
           },
         },
         // Récupérer les réactions
@@ -87,7 +103,20 @@ export class PostsService {
       },
     })
     // Fetch the complete post object with relations
-    const postObj = await this.post({ id: post.id })
+    const postObj = await this.prisma.post.findUnique({
+      where: { id: post.id },
+      // We take the Author relation to have the username reponse json update in real time
+      include: {
+        Author: {
+          include: {
+            Avatar: true,
+          },
+        },
+        Comments: true,
+        Reacts: true,
+        Assets: true,
+      },
+    })
     this.emitPostUpdate(postObj!)
 
     return postObj!
@@ -113,6 +142,5 @@ export class PostsService {
   // Emit post update event
   emitPostUpdate(post: Post): void {
     this.eventEmitter.emit(POST_EVENT, new PostEvent('PostUpdate', post))
-    console.log('Emitted post update event for post ID:', post.id)
   }
 }
