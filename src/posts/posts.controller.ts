@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Logger,
   Param,
   Post,
   Sse,
@@ -61,7 +60,6 @@ export class PostsController {
   subscribeToEvents(): Observable<{ data: string }> {
     return fromEvent(this.eventEmitter, POST_EVENT).pipe(
       map((payload) => {
-        Logger.log('Event sent')
         return {
           data: JSON.stringify(payload),
         }

@@ -3,7 +3,7 @@ import { PrismaService } from '@/prisma.service'
 import { CreateCommentDto } from './dto/create-comment.dto'
 import { Comment, Prisma } from 'generated/prisma/browser'
 import { EventEmitter2 } from '@nestjs/event-emitter'
-import { CommentEvent } from './events/comment.update'
+import { CommentEvent, CommentEventType } from './events/comment.update'
 import { COMMENT_EVENT } from '@/constants/events'
 
 @Injectable()
@@ -55,7 +55,7 @@ export class CommentsService {
         },
       },
     })
-    this.emitCommentUpdate(commentObj!)
+    this.emitCommentEvent(CommentEventType.CREATED, commentObj!)
 
     return commentObj!
   }
@@ -65,25 +65,51 @@ export class CommentsService {
     data: Prisma.CommentUpdateInput
   }): Promise<Comment> {
     const { data, where } = params
-    return this.prisma.comment.update({
+    const comment = await this.prisma.comment.update({
       data,
       where,
     })
+
+    // Fetch the complete comment object with relations
+    const commentObj = await this.prisma.comment.findUnique({
+      where: { id: comment.id },
+      include: {
+        Author: {
+          include: {
+            Avatar: true,
+          },
+        },
+      },
+    })
+    this.emitCommentEvent(CommentEventType.UPDATED, commentObj!)
+
+    return commentObj!
   }
 
   async deleteComment(where: Prisma.CommentWhereUniqueInput): Promise<Comment> {
-    return this.prisma.comment.delete({
+    // Fetch the complete comment object with relations BEFORE deleting
+    const commentObj = await this.prisma.comment.findUnique({
+      where,
+      include: {
+        Author: {
+          include: {
+            Avatar: true,
+          },
+        },
+      },
+    })
+
+    const comment = await this.prisma.comment.delete({
       where,
     })
+
+    // Emit event with the complete object
+    this.emitCommentEvent(CommentEventType.DELETED, commentObj!)
+    return comment
   }
 
-  // Emit comment update event
-  emitCommentUpdate(comment: Comment): void {
-    console.log('Emitting comment update event for comment ID:', comment.id)
-    this.eventEmitter.emit(
-      COMMENT_EVENT,
-      new CommentEvent('CommentUpdate', comment),
-    )
-    console.log('Emitted comment update event for comment ID:', comment.id)
+  // Emit comment event
+  private emitCommentEvent(type: CommentEventType, comment: Comment): void {
+    this.eventEmitter.emit(COMMENT_EVENT, new CommentEvent(type, comment))
   }
 }
