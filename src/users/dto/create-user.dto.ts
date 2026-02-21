@@ -13,6 +13,10 @@ export class CreateUserDto {
   @IsString()
   readonly email: string
 
+  @IsNotEmpty()
+  @IsString()
+  readonly password: string
+
   @IsOptional()
   @IsString()
   readonly assetId?: string

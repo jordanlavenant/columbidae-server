@@ -113,11 +113,17 @@ export class UsersService {
   }
 
   async createUser(data: CreateUserDto): Promise<User> {
-    const { assetId, ...userData } = data
+    const { assetId, password, ...userData } = data
+
+    // Hasher le nouveau mot de passe
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
 
     const user = await this.prisma.user.create({
       data: {
         ...userData,
+        password: hashedPassword,
+        salt,
         Avatar: assetId ? { connect: { id: assetId } } : undefined,
       },
     })
